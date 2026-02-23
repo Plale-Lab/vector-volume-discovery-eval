@@ -1,0 +1,8 @@
+minio
+pdf2image
+torch
+transformers
+dotenv
+qdrant-client
+colpali-engine
+pillow
