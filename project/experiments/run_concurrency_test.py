@@ -12,7 +12,7 @@ from services import qdrant_client, vlm_encoder
 CONCURRENCY_LEVELS = [1, 10, 50, 100, 200] 
 TOTAL_QUERIES_PER_STEP = 100 
 BENCHMARK_QUERIES = [
-    "how to roast duck",
+    "what is a process?",
 ]
 RESULTS_FILE = "logs/qdrant_concurrency_results.csv" 
 
@@ -53,6 +53,24 @@ def main():
         
 
         test_query_text = BENCHMARK_QUERIES[0]
+
+        enc_times = []
+        for _ in range(50):
+            start = time.perf_counter()
+            vlm_encoder.encode_query(model, processor, "what is a process?", config.DEVICE)
+            enc_times.append((time.perf_counter() - start) * 1000)
+
+        avg_encoding_time = np.mean(enc_times[5:])
+        
+        vectors_dict = vlm_encoder.encode_query(
+            model, processor, test_query_text, config.DEVICE
+        )
+        
+        pre_encoded_vector = vectors_dict["initial"]
+        
+        print(f"Pre-encoded vector for query: '{test_query_text}'")
+        print(f"Query Encoding Time: {avg_encoding_time:.2f} ms")
+
         vectors_dict = vlm_encoder.encode_query(
             model, processor, test_query_text, config.DEVICE
         )
